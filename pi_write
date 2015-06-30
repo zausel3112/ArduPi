@@ -1,0 +1,61 @@
+#python Desktop/Projekt/pi_write.py
+from serial import Serial
+import time
+import datetime
+
+
+
+serial_port = '/dev/ttyACM0'
+serial_bauds = 9600
+logcounter = 0
+count = 0
+datalog = 'Desktop/Projekt/LogData/logdata' +str(logcounter)+'.txt'
+
+
+if __name__ == "__main__":
+	time.sleep(1)
+	try:
+		print "Open Datalog File"
+		file = open(datalog,'w')
+	except:
+		error("Cant open Port")
+
+	print "Opening serial port"
+	s = Serial(serial_port, serial_bauds);
+
+  	print "Reading first line from port"
+  	print "Initializing communication"
+	time.sleep(1)
+  	while 1:
+		time.sleep(0.5)
+		line = s.readline()
+
+		if (count > 9):
+			file.close()
+			logcounter = logcounter + 1
+			datalog = 'Desktop/Projekt/LogData/logdata' +str(logcounter)+'.txt'
+			try:
+				print "***********************"
+				print "Open new Datalog File"
+				file = open(datalog,'w')
+			except:
+				error("Cant open Port")
+			print datalog
+			print "Counter resettet"
+			count = 0;
+		else:
+			count = count + 1
+			datalog = 'Desktop/Projekt/LogData/logdata' +str(logcounter)+'.txt'
+
+			try:	
+				t = datetime.datetime.now()
+				file.write(str(t) + "  ")
+    				file.write(line)
+				file.write('\n')
+				file.flush()
+				print "Write Dataset" + str(count)
+
+			except:
+				print datalog
+				print "Cant write File"
+	file.close()
